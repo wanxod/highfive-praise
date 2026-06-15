@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 가치 보석 칭찬 통장</title>
+    <style>
+        /* [폰트 완벽 해결] 전 세계 모든 기기에서 100% 표출되는 공식 상용 웹폰트 주소 강제 연동 */
+        @font-face {
+            font-family: 'HKLeeseoyun_WebSafe';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.1/HKLeeseoyun.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 모든 요소에 이서윤체 무조건 최우선 적용 */
+        * {
+            font-family: 'HKLeeseoyun_WebSafe', '이서윤체', '흥국생명 이서윤체', '맑은 고딕', sans-serif !important;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-size: 24px;
+            background-color: #fcf9f2;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* 1. 상단 제목 알록달록 색상 커스텀 매핑 */
+        h1 {
+            margin-top: 30px;
+            margin-bottom: 5px;
+            font-size: 38px;
+        }
+        .name-purple { color: #9b59b6; }    /* 학생 이름: 보라색 */
+        .value-default { color: #ff6b76; }  /* 가치 보석: 그대로 (핑크레드) */
+        .bank-blue { color: #3498db; }      /* 칭찬 통장: 파란색 */
+
+        /* 1. 요약 문구: 검정색으로 가독성 극대화 */
+        .summary-box {
+            font-size: 26px;
+            color: #000000; /* 검정색 변경 */
+            font-weight: bold;
+            margin-bottom: 35px;
+        }
+
+        /* 메인 좌우 2분할 레이아웃 */
+        .student-main-layout {
+            display: flex;
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        /* 2. 보석함 구역: 연두색 -> 핑크색(#ff8b94) 테두리로 전격 교체 */
+        .left-jewel-board {
+            flex: 0 0 68%;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 3px dashed #ff8b94; /* 핑크색 테두리 반영 */
+        }
+
+        .bank-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr); 
+            gap: 10px; 
+        }
+
+        .bank-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+        }
+        
+        .bank-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50% !important; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .bank-slot:hover .bank-circle { transform: scale(1.1); }
+        .bank-label { font-size: 15px; margin-top: 6px; font-weight: bold; color: #444; text-align: center; }
+        .bank-date { font-size: 12px; color: #888; margin-top: 2px; }
+
+        /* 오른쪽 가치 배지함 구역 */
+        .right-badge-board {
+            flex: 0 0 32%;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 3px dashed #117a65;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .badge-title-header {
+            margin: 0 0 15px 0; 
+            color:#117a65; 
+            font-size:25px;
+            border-bottom: 2px solid #a3e4d7;
+            padding-bottom: 8px;
+            width: 100%;
+        }
+
+        .badge-item {
+            background-color: #e8f8f5;
+            border: 2px solid #a3e4d7;
+            color: #117a65;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 10px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 팝업 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 85%;
+            max-width: 390px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .modal-circle {
+            width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; margin: 0 auto 15px auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .modal-info-card {
+            font-size: 21px; margin: 15px 0; color: #444; text-align: left; background: #fdfbfc; padding: 15px; border: 1px solid #eee; border-radius: 10px; line-height: 1.6;
+        }
+        
+        .close-btn {
+            background-color: #ff8b94; color: white; border: none; padding: 12px 30px; font-size: 23px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 100%;
+        }
+        .close-btn:hover { background-color: #ff707a; }
+    </style>
+</head>
+<body>
+
+    <h1 id="headlineTitle">
+        ✨ <span id="studentName" class="name-purple">나</span>의 
+        <span class="value-default">가치 보석💎</span> 
+        <span class="bank-blue">칭찬 통장</span> ✨
+    </h1>
+    <div class="summary-box" id="summaryCounter">가치 보석함을 불러오는 중입니다...</div>
+
+    <div class="student-main-layout">
+        
+        <div class="left-jewel-board">
+            <div class="bank-grid" id="studentBankGrid"></div>
+        </div>
+
+        <div class="right-badge-board">
+            <h3 class="badge-title-header">🏅 나의 가치 배지함</h3>
+            <div id="badgeGridZone" style="width:100%;"></div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="studentDetailModal">
+        <div class="modal-content">
+            <div class="modal-circle" id="mCircle"></div>
+            <h2 id="mTitle" style="margin: 0 0 10px 0;">보석 상세 내역</h2>
+            
+            <div class="modal-info-card">
+                <strong>📅 받은 날짜:</strong> <span id="mDate" style="color:#666;"></span><br>
+                <strong style="display:inline-block; margin-top:8px;">📝 선생님의 칭찬 말씀:</strong><br>
+                <span id="mReason" style="color: #ff6b76; font-weight: bold;"></span>
+            </div>
+            
+            <button class="close-btn" onclick="closeStudentModal()">닫기</button>
+        </div>
+    </div>
+
+    <script>
+        let studentData = null;
+
+        function loadCurrentStudentProfile() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = parseInt(urlParams.get('id')) || 1; 
+
+            const savedDb = localStorage.getItem('highfive_praise_system_v5');
+            if (savedDb) {
+                const parsed = JSON.parse(savedDb);
+                studentData = parsed.students.find(s => s.id === studentId);
+            }
+
+            if (!studentData) {
+                const studentNamesList = [
+                    "강채원", "구강민", "권지윤", "김규민", "김단우", "김시율", "김은호", "노규비", 
+                    "문채민", "박서우", "박세담", "백주은", "손현우", "신채현", "심하준", "윤강현", 
+                    "이루나", "이루아", "전은지", "정유나", "정재이", "정하늘", "조우성", "진주완", 
+                    "최혜린", "하재율", "하태준", "황정원"
+                ];
+                const currentName = studentNamesList[studentId - 1] || "기쁨이";
+
+                studentData = {
+                    id: studentId,
+                    name: currentName,
+                    inventory: [
+                        { id: 'j1', name: '성실', color: '#FFB3BA', icon: '🌱', date: '2026.06.11.', reason: '아침 등교 후 교실 정돈 활동을 자발적으로 예쁘게 도왔습니다.' },
+                        { id: 'j4', name: '배려', color: '#BFFCC6', icon: '🤝', date: '2026.06.12.', reason: '모둠 활동 도중 친구에게 순서를 먼저 양보하는 착한 마음씨를 보여주었습니다.' }
+                    ],
+                    badges: [
+                        { name: '바른 생활 가치 배지', date: '2026.06.12.' }
+                    ]
+                };
+            }
+
+            renderStudentInterface();
+        }
+
+        function renderStudentInterface() {
+            // 학생 이름 보라색 적용 부분 동적 업데이트
+            document.getElementById('studentName').innerText = studentData.name;
+            document.getElementById('summaryCounter').innerText = `내가 차곡차곡 모은 소중한 가치 보석은 총 [ ${studentData.inventory.length}개 ] 입니다! 🎉`;
+
+            const grid = document.getElementById('studentBankGrid');
+            grid.innerHTML = '';
+
+            studentData.inventory.forEach(item => {
+                const slot = document.createElement('div');
+                slot.className = 'bank-slot';
+                slot.onclick = () => openStudentModal(item);
+                slot.innerHTML = `
+                    <div class="bank-circle" style="background-color: ${item.color};">${item.icon}</div>
+                    <div class="bank-label">${item.name}</div>
+                    <div class="bank-date">${item.date}</div>
+                `;
+                grid.appendChild(slot);
+            });
+
+            const emptyCount = Math.max(0, 10 - studentData.inventory.length);
+            for(let i=0; i<emptyCount; i++) {
+                grid.innerHTML += `<div class="bank-slot"><div class="bank-circle" style="background: #f4f4f4; box-shadow:none;"></div></div>`;
+            }
+
+            const bZone = document.getElementById('badgeGridZone');
+            bZone.innerHTML = '';
+            if (studentData.badges.length === 0) {
+                bZone.innerHTML = `<p style="font-size:19px; color:#aaa; text-align:center; font-style:italic; padding-top:20px;">보석을 더 많이 모으면 멋진 배지가 여기에 나타나요!</p>`;
+            } else {
+                studentData.badges.forEach(b => {
+                    bZone.innerHTML += `<div class="badge-item">🏅 ${b.name}<span style="font-size:14px; color:#666; margin-top:5px;">(${b.date} 획득)</span></div>`;
+                });
+            }
+        }
+
+        function openStudentModal(item) {
+            const circle = document.getElementById('mCircle');
+            circle.innerText = item.icon; 
+            circle.style.backgroundColor = item.color;
+            
+            document.getElementById('mTitle').innerText = `[${item.name}] 가치 보석 상세`;
+            document.getElementById('mDate').innerText = item.date;
+            document.getElementById('mReason').innerText = item.reason;
+            document.getElementById('studentDetailModal').style.display = 'flex';
+        }
+
+        function closeStudentModal() { 
+            document.getElementById('studentDetailModal').style.display = 'none'; 
+        }
+
+        loadCurrentStudentProfile();
+    </script>
+</body>
+</html>
