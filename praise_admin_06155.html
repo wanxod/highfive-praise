@@ -691,7 +691,7 @@
         function openAllQrModal() {
             const grid = document.getElementById('qrGrid'); grid.innerHTML = '';
             students.forEach(s => {
-                const individualStudentUrl = `student_view.html?id=${s.id}`;
+                const individualStudentUrl = `https://wanxod.github.io/highfive-praise/student_view.html?id=${s.id}`;
                 const qrGeneratorApi = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(individualStudentUrl)}`;
                 grid.innerHTML += `<div class="qr-card-box"><div class="qr-student-name-text">${s.id}.${s.name}</div><img src="${qrGeneratorApi}" class="qr-display-img" onclick="zoomIndividualQr('${qrGeneratorApi}', '${s.name}')"></div>`;
             });
